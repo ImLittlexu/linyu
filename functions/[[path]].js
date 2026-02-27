@@ -205,7 +205,8 @@ export async function onRequest(context) {
   // GET /random → 302 重定向到随机图片
   if (pathname === '/random') {
     const file = pickRandom()
-    return Response.redirect(`/img/${file}`, 302)
+    const imageUrl = new URL(`/img/${file}`, request.url).toString()
+    return Response.redirect(imageUrl, 302)
   }
 
   // GET /random/json → 返回随机图片 JSON 信息
