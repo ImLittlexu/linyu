@@ -1,0 +1,20 @@
+{
+  "name": "linyu-random-image",
+  "version": "1.0.0",
+  "description": "随机图片接口 - 托管于 EdgeOne Pages",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node app.js",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "koa": "^2.15.3",
+    "@koa/router": "^12.0.1",
+    "koa-static": "^5.0.0",
+    "koa-cors": "^0.0.16"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}
