@@ -1,15 +1,8 @@
 /**
- * EdgeOne Pages Functions - 随机图片接口
- * 捕获所有路径的处理器：functions/[[path]].js
- *
- * 支持的接口：
- *   GET /random        → 302 重定向到随机图片
- *   GET /random/json   → 返回随机图片的 JSON 信息
- *   GET /list          → 返回全部图片列表
+ * 共享模块：/img 目录下的全部图片列表
+ * 文件以 _ 开头，EdgeOne Pages 不会将其识别为路由
  */
-
-// /img 目录下的全部图片（新增图片后需同步更新此列表）
-const IMAGES = [
+export const IMAGES = [
   '00F7BFD9C469593116E4CEC98B974338.png',
   '022FFE29C27A0E683CE40B7881A52119.png',
   '0243A68A9649ADA64CD54985411CC076.png',
@@ -170,81 +163,12 @@ const IMAGES = [
   'FDFE6006877A9A33C723831AB931C5A6.jpg',
 ]
 
-/**
- * 返回随机图片文件名
- */
-function pickRandom() {
+export function pickRandom() {
   return IMAGES[Math.floor(Math.random() * IMAGES.length)]
 }
 
-/**
- * 构建 CORS 响应头
- */
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  }
-}
-
-/**
- * EdgeOne Pages Functions 入口
- * @param {EventContext} context
- */
-export async function onRequest(context) {
-  const { request } = context
-  const url = new URL(request.url)
-  const pathname = url.pathname
-
-  // 处理预检请求
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders() })
-  }
-
-  // GET /random → 302 重定向到随机图片
-  if (pathname === '/random') {
-    const file = pickRandom()
-    const imageUrl = new URL(`/img/${file}`, request.url).toString()
-    return Response.redirect(imageUrl, 302)
-  }
-
-  // GET /random/json → 返回随机图片 JSON 信息
-  if (pathname === '/random/json') {
-    const file = pickRandom()
-    return new Response(
-      JSON.stringify({
-        url: `/img/${file}`,
-        filename: file,
-        total: IMAGES.length,
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          ...corsHeaders(),
-        },
-      }
-    )
-  }
-
-  // GET /list → 返回全部图片列表
-  if (pathname === '/list') {
-    return new Response(
-      JSON.stringify({
-        total: IMAGES.length,
-        images: IMAGES.map((f) => ({ filename: f, url: `/img/${f}` })),
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          ...corsHeaders(),
-        },
-      }
-    )
-  }
-
-  // 其余路径交由 Pages 静态资源处理
-  return context.next()
+export const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
 }
