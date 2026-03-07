@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>林语之书</title>
+    <meta
+      name="description"
+      content="按批次懒加载的图片瀑布流画廊，展示 img 目录中的全部图片。"
+    >
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Lazy Loading Gallery</p>
+          <h1>林语之书</h1>
+          <p class="hero-text">
+            伟大神秘的林语之书会解答你的所有问题
+          </p>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-label">已加载</span>
+            <strong id="loaded-count">0</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">总图片</span>
+            <strong id="total-count">-</strong>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="gallery-section" aria-live="polite">
+          <div id="gallery" class="gallery"></div>
+          <div id="status" class="status">准备加载图片...</div>
+          <div id="sentinel" class="sentinel" aria-hidden="true"></div>
+        </section>
+      </main>
+    </div>
+
+    <template id="image-card-template">
+      <figure class="card">
+        <div class="card-media">
+          <img alt="" decoding="async" loading="lazy">
+        </div>
+        <figcaption class="card-caption"></figcaption>
+      </figure>
+    </template>
+
+    <script src="/gallery.js" defer></script>
+  </body>
+</html>

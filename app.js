@@ -33,11 +33,39 @@ app.use(async (ctx, next) => {
 function getImageList() {
   const imgDir = path.join(__dirname, 'img')
   try {
-    return fs.readdirSync(imgDir).filter(file =>
-      /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(file)
-    )
+    return fs
+      .readdirSync(imgDir)
+      .filter(file => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(file))
+      .sort((left, right) => left.localeCompare(right, 'en'))
   } catch {
     return []
+  }
+}
+
+function parsePositiveInt(value) {
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null
+}
+
+function buildImagePage(images, query = {}) {
+  const offsetParam = parsePositiveInt(query.offset)
+  const limitParam = parsePositiveInt(query.limit)
+  const hasPagination = query.offset !== undefined || query.limit !== undefined
+
+  const total = images.length
+  const offset = Math.min(offsetParam ?? 0, total)
+  const limit = Math.min(limitParam ?? (hasPagination ? 24 : total), total)
+  const pageImages = images.slice(offset, offset + limit)
+  const nextOffset = offset + pageImages.length
+
+  return {
+    total,
+    offset,
+    limit,
+    count: pageImages.length,
+    hasMore: nextOffset < total,
+    nextOffset,
+    images: pageImages.map(filename => ({ filename, url: `/img/${filename}` }))
   }
 }
 
@@ -81,10 +109,7 @@ router.get('/random/json', async (ctx) => {
  */
 router.get('/list', async (ctx) => {
   const images = getImageList()
-  ctx.body = {
-    total: images.length,
-    images: images.map(f => ({ filename: f, url: `/img/${f}` }))
-  }
+  ctx.body = buildImagePage(images, ctx.query)
 })
 
 app.use(router.routes()).use(router.allowedMethods())

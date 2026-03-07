@@ -10,7 +10,7 @@
 |------|------|------|
 | `/random` | GET | 随机返回一张图片（302 重定向至图片地址）|
 | `/random/json` | GET | 随机返回图片信息（JSON 格式，不重定向）|
-| `/list` | GET | 返回全部图片列表 |
+| `/list` | GET | 返回图片列表，支持分页 |
 
 ### `/random`
 直接访问该接口，浏览器会自动跳转到随机图片：
@@ -35,16 +35,28 @@ GET https://your-domain.edgeone.app/random
 ```
 
 ### `/list`
-返回全部可用图片列表：
+默认返回全部可用图片列表，也支持通过 `offset` 和 `limit` 分页：
+
+```text
+GET /list?offset=0&limit=24
+```
+
 ```json
 {
   "total": 163,
+  "offset": 0,
+  "limit": 24,
+  "count": 24,
+  "hasMore": true,
+  "nextOffset": 24,
   "images": [
     { "filename": "00F7BFD9.png", "url": "/img/00F7BFD9.png" },
     ...
   ]
 }
 ```
+
+访问站点根路径 `/` 可以打开图片画廊首页，页面采用瀑布流布局并在滚动时按批次懒加载图片。
 
 ---
 

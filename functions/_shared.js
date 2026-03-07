@@ -422,6 +422,33 @@ export function pickRandom() {
   return IMAGES[Math.floor(Math.random() * IMAGES.length)]
 }
 
+function parsePositiveInt(value) {
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null
+}
+
+export function buildImagePage(url) {
+  const offsetParam = parsePositiveInt(url.searchParams.get('offset'))
+  const limitParam = parsePositiveInt(url.searchParams.get('limit'))
+  const hasPagination = url.searchParams.has('offset') || url.searchParams.has('limit')
+
+  const total = IMAGES.length
+  const offset = Math.min(offsetParam ?? 0, total)
+  const limit = Math.min(limitParam ?? (hasPagination ? 24 : total), total)
+  const images = IMAGES.slice(offset, offset + limit)
+  const nextOffset = offset + images.length
+
+  return {
+    total,
+    offset,
+    limit,
+    count: images.length,
+    hasMore: nextOffset < total,
+    nextOffset,
+    images: images.map((filename) => ({ filename, url: `/img/${filename}` })),
+  }
+}
+
 export const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
